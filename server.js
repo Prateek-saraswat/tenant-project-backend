@@ -7,15 +7,20 @@ const rateLimit = require('express-rate-limit');
 
 
 const app = express();
-
-// Security Middleware
-app.use(helmet());
 app.use(cors({
     origin: true,
   credentials: true
 }));
 
 app.options('*', cors()); 
+
+// Security Middleware
+app.use(helmet());
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
+
 
 // Rate Limiting
 if (process.env.NODE_ENV === 'production'){
@@ -72,7 +77,7 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+app.listen(PORT,'0.0.0.0', () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL}`);
