@@ -21,7 +21,6 @@ app.use(cors({
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
 }));
 
 app.options('*', cors());
@@ -35,10 +34,10 @@ app.use(helmet({
     crossOriginEmbedderPolicy: false
 }));
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Credentials', 'true');
-  next();
-});
+// app.use((req, res, next) => {
+//   res.header('Access-Control-Allow-Credentials', 'true');
+//   next();
+// });
 
 
 // Rate Limiting
