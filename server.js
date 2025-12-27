@@ -7,15 +7,34 @@ const rateLimit = require('express-rate-limit');
 
 
 const app = express();
+// app.use(cors({
+//     origin: true,
+//   credentials: true
+// }));
+
+// app.options('*', cors()); 
 app.use(cors({
-    origin: true,
-  credentials: true
+    origin: [
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'https://tenent-saass.netlify.app/'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
 
-app.options('*', cors()); 
+app.options('*', cors());
+
 
 // Security Middleware
-app.use(helmet());
+// app.use(helmet());
+
+app.use(helmet({
+    crossOriginResourcePolicy: false,
+    crossOriginEmbedderPolicy: false
+}));
+
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Credentials', 'true');
   next();
