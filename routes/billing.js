@@ -184,4 +184,39 @@ router.get('/invoices', checkPermission('billing.view'), async (req, res) => {
     }
 });
 
+// POST /billing/downgrade - Downgrade to free plan
+router.post(
+  '/downgrade',
+  checkPermission('billing.manage'),
+  async (req, res) => {
+    try {
+      const planId = 'free';
+
+      const planLimits = {
+        users: 5,
+        projects: 3,
+        storage_gb: 1
+      };
+
+      // ✅ update tenant plan
+      await db.query(
+        'UPDATE tenants SET plan = ?, plan_limits = ? WHERE id = ?',
+        [planId, JSON.stringify(planLimits), req.user.tenantId]
+      );
+
+      // ✅ cancel active subscriptions (optional but correct)
+      await db.query(
+        'UPDATE subscriptions SET status = "cancelled" WHERE tenant_id = ? AND status = "active"',
+        [req.user.tenantId]
+      );
+
+      res.json({ success: true, message: 'Downgraded to Free plan' });
+    } catch (error) {
+      console.error('Downgrade error:', error);
+      res.status(500).json({ error: 'Failed to downgrade plan' });
+    }
+  }
+);
+
+
 module.exports = router;
